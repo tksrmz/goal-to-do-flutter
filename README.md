@@ -16,7 +16,7 @@ flutter --version
 
 ```sh
 flutter pub get                # 依存関係の取得
-flutter run -d chrome          # Chrome で起動（Edge の場合は -d edge）
+flutter run -d edge            # Edge で起動（動作検証は Edge で行う）
 flutter run -d web-server      # ブラウザを起動せずに開発サーバーだけ立てる
 flutter analyze                # 静的解析
 dart format .                  # フォーマット
