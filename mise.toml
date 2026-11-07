@@ -1,0 +1,5 @@
+[tools]
+flutter = "3.47.9"
+firebase = "15.35.0"
+# Firestore Emulator は Java 21 以上が必要
+java = "temurin-21"

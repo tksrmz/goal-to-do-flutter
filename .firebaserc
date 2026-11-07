@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "goal-to-do-dev",
+    "dev": "goal-to-do-dev"
+  }
+}
