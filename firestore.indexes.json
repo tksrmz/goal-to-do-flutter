@@ -1,4 +1,20 @@
 {
   "indexes": [],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "purposes",
+      "fieldPath": "description",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "goals",
+      "fieldPath": "description",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "goals",
+      "fieldPath": "achievementCriteria",
+      "indexes": []
+    }
+  ]
 }

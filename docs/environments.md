@@ -19,7 +19,7 @@
 |------|------|-----------|
 | Web アプリ | 登録済み（`1:540815118968:web:e829311b321ef5f392d38d`） | FlutterFire CLI |
 | Firestore | `(default)` データベースを `asia-northeast1`（東京）に作成済み | Firebase CLI |
-| Firestore のセキュリティルール | 暫定ですべての読み書きを拒否。設計書のルール案（DES-001 5.2）は未反映 | [firestore.rules](../firestore.rules)（`firebase deploy --only firestore`） |
+| Firestore のセキュリティルール | 暫定ですべての読み書きを拒否。リポジトリには設計書のルール（DES-001 5.2）を反映済みで、デプロイは未実施 | [firestore.rules](../firestore.rules)（`firebase deploy --only firestore`） |
 | 認証プロバイダ | メールアドレス＋パスワードが有効 | [firebase.json](../firebase.json) の `auth`（`firebase deploy --only auth`） |
 | ユーザーによるアカウント作成 | 無効（NFR-003）。`accounts:signUp` が `ADMIN_ONLY_OPERATION` で拒否されることを確認済み | コンソール（Authentication > Settings > User actions） |
 | ログイン確認用のアカウント | 作成済み | コンソール（Authentication > Users） |

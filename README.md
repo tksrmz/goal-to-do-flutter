@@ -4,7 +4,7 @@
 
 ## 開発環境
 
-Flutter・Firebase CLI・Java（Firestore Emulator 用）のバージョンは [mise](https://mise.jdx.dev/) で管理し、[mise.toml](mise.toml) で固定している。
+Flutter・Firebase CLI・Java（Firestore Emulator 用）・Node（セキュリティルールのテスト用）のバージョンは [mise](https://mise.jdx.dev/) で管理し、[mise.toml](mise.toml) で固定している。
 
 ```sh
 mise trust     # 初回のみ
@@ -35,6 +35,18 @@ flutterfire configure --project goal-to-do-dev --platforms web --out lib/firebas
 firebase emulators:start                                          # Auth / Firestore / Hosting / UI(http://127.0.0.1:4000)
 flutter run -d edge --dart-define=USE_FIREBASE_EMULATOR=true      # Emulator に接続して起動
 ```
+
+### セキュリティルールのテスト
+
+[rules_test/](rules_test/) に、Firestore Emulator 上で動かすセキュリティルールのテストがある。
+
+```sh
+npm --prefix rules_test ci   # 初回のみ
+firebase emulators:exec --only firestore --project demo-goal-to-do "mise exec -- npm --prefix rules_test test"
+```
+
+- Firebase CLI（mise で入れたスタンドアロン版）は、`emulators:exec` の中で自前の古い Node を PATH の先頭に置く。テストは Node 24 以上が要るので、`mise exec --` を付けて mise の Node で実行する
+- プロジェクト ID を `demo-` で始めると、Emulator だけを使い、実際のプロジェクトには接続しない
 
 ### デプロイ
 
