@@ -21,14 +21,7 @@ dart pub global activate flutterfire_cli
 
 ## Firebase
 
-| 環境 | プロジェクト ID | `.firebaserc` のエイリアス | Flutter の設定ファイル |
-|------|----------------|--------------------------|----------------------|
-| 開発 | `goal-to-do-dev` | `dev`（`default` も同じ） | [lib/firebase_options_dev.dart](lib/firebase_options_dev.dart) |
-| 本番 | `goal-to-do-prod`（未作成） | - | - |
-
-- Firestore のロケーション: `asia-northeast1`（東京）
-- Firestore のセキュリティルール: [firestore.rules](firestore.rules)（コレクション設計が決まるまではすべて拒否）
-- `lib/firebase_options_*.dart` の値は秘密情報ではない（Web アプリのバンドルにそのまま含まれる）
+開発用（`goal-to-do-dev`）と本番用（未作成）のプロジェクトの構成・現状・今後の手順は [docs/environments.md](docs/environments.md) を参照。
 
 設定ファイルの再生成:
 
