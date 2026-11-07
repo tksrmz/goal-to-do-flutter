@@ -54,3 +54,7 @@ app.*.map.json
 node_modules/
 firestore-debug.log
 ui-debug.log
+
+# コード生成（build_runner）の出力はコミットしない（DES-001 6.5）
+*.g.dart
+*.freezed.dart
