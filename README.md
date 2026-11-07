@@ -56,7 +56,8 @@ flutter build web && firebase deploy --only hosting --project dev
 flutter pub get                # 依存関係の取得
 flutter run -d edge            # Edge で起動（動作検証は Edge で行う）
 flutter run -d web-server      # ブラウザを起動せずに開発サーバーだけ立てる
-flutter analyze                # 静的解析
+dart run build_runner watch -d # freezed・Riverpod のコード生成（変更を監視して生成し続ける）
+dart analyze                   # 静的解析（riverpod_lint を含む）
 dart format .                  # フォーマット
 flutter test                   # テスト
 flutter build web              # リリースビルド（出力先: build/web）
