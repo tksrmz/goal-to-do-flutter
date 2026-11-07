@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// コレクション設計（設計書で定める）が決まるまでは、すべての読み書きを拒否する。
+// NFR-004: 設計確定後、ログインユーザーが自分のデータのみ読み書きできるルールに置き換える。
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
