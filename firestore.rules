@@ -1,11 +1,113 @@
 rules_version = '2';
 
-// コレクション設計（設計書で定める）が決まるまでは、すべての読み書きを拒否する。
-// NFR-004: 設計確定後、ログインユーザーが自分のデータのみ読み書きできるルールに置き換える。
+// 設計: docs/design/DES-001.md 5章
+// テスト: rules_test/（Firestore Emulator 上で実行する）
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    match /users/{uid} {
+      // NFR-004: ログインユーザーは自分のデータのみ読み書きできる
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      function docPath(collection, id) {
+        return /databases/$(database)/documents/users/$(uid)/$(collection)/$(id);
+      }
+
+      // 名前: 空白のみは不可。上限はアプリ（100文字）の4倍の緩い値
+      function isName(v) {
+        return v is string && v.trim().size() > 0 && v.size() <= 400;
+      }
+
+      // 説明文・達成基準: 上限はアプリ（2,000文字）の4倍の緩い値
+      function isLongText(v) {
+        return v is string && v.trim().size() > 0 && v.size() <= 8000;
+      }
+
+      function isOptLongText(v) {
+        return v == null || (v is string && v.size() <= 8000);
+      }
+
+      function isDate(v) {
+        return v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+      }
+
+      function isOptDate(v) {
+        return v == null || isDate(v);
+      }
+
+      // 作成時はサーバー時刻、更新時は元の値のまま
+      function hasValidCreatedAt() {
+        return (resource == null && request.resource.data.createdAt == request.time)
+          || (resource != null && request.resource.data.createdAt == resource.data.createdAt);
+      }
+
+      // 作成時、または親の ID が変わったときだけ親を確認する（get 系の呼び出しを最小にする）
+      function parentChanged(field) {
+        return resource == null || request.resource.data[field] != resource.data[field];
+      }
+
+      // 親が存在しなければ getAfter() は null を返す
+      function isOpenParent(parent, openStatus) {
+        return parent != null && parent.data.status == openStatus;
+      }
+
+      match /purposes/{purposeId} {
+        function isValid(d) {
+          return d.keys().hasOnly(['name', 'description', 'status', 'createdAt'])
+            && d.keys().hasAll(['name', 'description', 'status', 'createdAt'])
+            && isName(d.name)
+            && isOptLongText(d.description)
+            && d.status in ['unachieved', 'achieved'];
+        }
+
+        allow read, delete: if isOwner();
+        allow create, update: if isOwner() && isValid(request.resource.data) && hasValidCreatedAt();
+      }
+
+      match /goals/{goalId} {
+        function isValid(d) {
+          return d.keys().hasOnly(['purposeId', 'name', 'description', 'dueDate', 'achievementCriteria', 'status', 'createdAt'])
+            && d.keys().hasAll(['purposeId', 'name', 'description', 'dueDate', 'achievementCriteria', 'status', 'createdAt'])
+            && d.purposeId is string
+            && isName(d.name)
+            && isOptLongText(d.description)
+            && isDate(d.dueDate)
+            && isLongText(d.achievementCriteria)
+            && d.status in ['unachieved', 'achieved', 'achieved_by_parent'];
+        }
+
+        function hasOpenParent(d) {
+          return !parentChanged('purposeId')
+            || isOpenParent(getAfter(docPath('purposes', d.purposeId)), 'unachieved');
+        }
+
+        allow read, delete: if isOwner();
+        allow create, update: if isOwner() && isValid(request.resource.data) && hasValidCreatedAt()
+          && hasOpenParent(request.resource.data);
+      }
+
+      match /tasks/{taskId} {
+        function isValid(d) {
+          return d.keys().hasOnly(['goalId', 'name', 'scheduledDate', 'important', 'urgent', 'status', 'createdAt'])
+            && d.keys().hasAll(['goalId', 'name', 'scheduledDate', 'important', 'urgent', 'status', 'createdAt'])
+            && d.goalId is string
+            && isName(d.name)
+            && isOptDate(d.scheduledDate)
+            && d.important is bool
+            && d.urgent is bool
+            && d.status in ['incomplete', 'complete', 'complete_by_parent'];
+        }
+
+        function hasOpenParent(d) {
+          return !parentChanged('goalId')
+            || isOpenParent(getAfter(docPath('goals', d.goalId)), 'unachieved');
+        }
+
+        allow read, delete: if isOwner();
+        allow create, update: if isOwner() && isValid(request.resource.data) && hasValidCreatedAt()
+          && hasOpenParent(request.resource.data);
+      }
     }
   }
 }

@@ -3,3 +3,5 @@ flutter = "3.47.9"
 firebase = "15.35.0"
 # Firestore Emulator は Java 21 以上が必要
 java = "temurin-21"
+# セキュリティルールのテスト（rules_test/）用。@firebase/rules-unit-testing 6 は Node 24.12 以上が必要
+node = "24.19.0"

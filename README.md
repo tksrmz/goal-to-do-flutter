@@ -4,7 +4,7 @@
 
 ## 開発環境
 
-Flutter・Firebase CLI・Java（Firestore Emulator 用）のバージョンは [mise](https://mise.jdx.dev/) で管理し、[mise.toml](mise.toml) で固定している。
+Flutter・Firebase CLI・Java（Firestore Emulator 用）・Node（セキュリティルールのテスト用）のバージョンは [mise](https://mise.jdx.dev/) で管理し、[mise.toml](mise.toml) で固定している。
 
 ```sh
 mise trust     # 初回のみ
@@ -36,6 +36,20 @@ firebase emulators:start                                          # Auth / Fires
 flutter run -d edge --dart-define=USE_FIREBASE_EMULATOR=true      # Emulator に接続して起動
 ```
 
+Emulator の Auth は起動のたびに空になる。ログインに使うユーザーは Emulator UI（Authentication タブの「Add user」）で作る。
+
+### セキュリティルールのテスト
+
+[rules_test/](rules_test/) に、Firestore Emulator 上で動かすセキュリティルールのテストがある。
+
+```sh
+npm --prefix rules_test ci   # 初回のみ
+firebase emulators:exec --only firestore --project demo-goal-to-do "mise exec -- npm --prefix rules_test test"
+```
+
+- Firebase CLI（mise で入れたスタンドアロン版）は、`emulators:exec` の中で自前の古い Node を PATH の先頭に置く。テストは Node 24 以上が要るので、`mise exec --` を付けて mise の Node で実行する
+- プロジェクト ID を `demo-` で始めると、Emulator だけを使い、実際のプロジェクトには接続しない
+
 ### デプロイ
 
 ```sh
@@ -43,13 +57,16 @@ firebase deploy --only auth,firestore --project dev   # 認証プロバイダと
 flutter build web && firebase deploy --only hosting --project dev
 ```
 
+- スタンドアロン版の Firebase CLI は、展開したモジュールを `~/.cache/firebase/tools` に置き、バージョンをまたいで共有する。別のバージョンの CLI（他のプロジェクトの `firebase mcp` など）が動いていると展開し直せず、`firebase-tools setup failed.` になる。その場合は、同じバージョンの npm 版を mise の Node で使う（`mise exec -- npx firebase-tools@<mise.toml のバージョン> deploy ...`）
+
 ## よく使うコマンド
 
 ```sh
 flutter pub get                # 依存関係の取得
 flutter run -d edge            # Edge で起動（動作検証は Edge で行う）
 flutter run -d web-server      # ブラウザを起動せずに開発サーバーだけ立てる
-dart run build_runner watch -d # freezed・Riverpod のコード生成（変更を監視して生成し続ける）
+dart run build_runner build    # freezed・Riverpod のコード生成（生成物はコミットしないので、取得後に必ず実行する）
+dart run build_runner watch    # 変更を監視して生成し続ける
 dart analyze                   # 静的解析（riverpod_lint を含む）
 dart format .                  # フォーマット
 flutter test                   # テスト

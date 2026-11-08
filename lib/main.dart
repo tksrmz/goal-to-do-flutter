@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
+import 'app.dart';
 import 'firebase_options_dev.dart';
 
 /// `--dart-define=USE_FIREBASE_EMULATOR=true` でローカルの Emulator Suite に接続する。
@@ -11,6 +13,8 @@ const _useFirebaseEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // URL を `/#/today` ではなく `/today` にする。Hosting は全パスを index.html へ書き換える（firebase.json）
+  usePathUrlStrategy();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final firestore = FirebaseFirestore.instance;
@@ -26,16 +30,5 @@ Future<void> main() async {
     firestore.useFirestoreEmulator('localhost', 8080);
   }
 
-  runApp(const ProviderScope(child: MainApp()));
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(body: Center(child: Text('Hello World!'))),
-    );
-  }
+  runApp(const ProviderScope(child: App()));
 }
