@@ -118,6 +118,31 @@ void main() {
     expect(find.text('健康のために'), findsOneWidget);
   });
 
+  testWidgets('編集中に同期で作成日時が入っても保存でき、作成日時は保たれる', (tester) async {
+    final pending = task('T', 'X', name: 'タスクT', pending: true);
+    final items = await openAll(
+      tester,
+      ItemTree(
+        purposes: [purpose('P')],
+        goals: [goal('X', 'P')],
+        tasks: [pending],
+      ),
+    );
+    await tester.tap(actionOf('タスクT', '編集'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextFormField, 'タスクT'), '新しい名前');
+
+    // フォームを開いている間に、サーバーの作成日時が届く
+    final synced = pending.copyWith(createdAt: createdAt(5));
+    items.receive(synced);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(FilledButton, '保存'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(items.tree.tasks['T'], synced.copyWith(name: '新しい名前'));
+  });
+
   testWidgets('AC-023: 目標は名前・期日・達成基準が必須', (tester) async {
     final items = await openAll(
       tester,

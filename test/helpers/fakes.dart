@@ -75,6 +75,19 @@ class FakeItemRepository implements ItemRepository {
     return Future.value();
   }
 
+  /// サーバーとの同期などで、アプリの書き込みによらず項目が変わったことを再現する。
+  void receive(Item item) {
+    tree = tree.apply(
+      Mutation([
+        if (tree.find(item.ref) case final before?)
+          UpdateItem(before, item)
+        else
+          CreateItem(item),
+      ]),
+    );
+    _changes.add(tree);
+  }
+
   Item _stamp(Item item) {
     _clock = _clock.add(const Duration(minutes: 1));
     return switch (item) {

@@ -57,6 +57,15 @@ String? _requiredName(String? value) =>
 
 String? _optionalText(String text) => text.trim().isEmpty ? null : text;
 
+/// 編集の保存時点の項目。フォームを開いた後に同期で `createdAt` が入ったり、別のタブで状態が
+/// 変わったりしても、それらを保ったまま入力内容だけを反映できるように、開いた時点の値ではなく
+/// いまのツリーの値に入力内容を重ねる。削除されていれば [OperationNotAllowed]。
+T _current<T extends Item>(ItemTree tree, T initial) =>
+    switch (tree.find(initial.ref)) {
+      final T item => item,
+      _ => throw OperationNotAllowed('${initial.ref} not found'),
+    };
+
 /// 入力を保存する。作成・編集の可否はツリーで確かめ、できなければメッセージを出す。
 void _save(
   BuildContext context,
@@ -158,7 +167,10 @@ class _PurposeFormState extends ConsumerState<_PurposeForm> {
     _save(context, ref, (tree) {
       if (widget.initial case final initial?) {
         return tree.update(
-          initial.copyWith(name: name, description: description),
+          _current(
+            tree,
+            initial,
+          ).copyWith(name: name, description: description),
         );
       }
       final writer = ref.read(itemWriterProvider)!;
@@ -245,7 +257,7 @@ class _GoalFormState extends ConsumerState<_GoalForm> {
     _save(context, ref, (tree) {
       if (widget.initial case final initial?) {
         return tree.update(
-          initial.copyWith(
+          _current(tree, initial).copyWith(
             name: name,
             description: description,
             achievementCriteria: criteria,
@@ -372,7 +384,7 @@ class _TaskFormState extends ConsumerState<_TaskForm> {
     _save(context, ref, (tree) {
       if (widget.initial case final initial?) {
         return tree.update(
-          initial.copyWith(
+          _current(tree, initial).copyWith(
             name: name,
             scheduledDate: _scheduledDate,
             important: _important,
