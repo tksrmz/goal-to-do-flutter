@@ -57,6 +57,8 @@ firebase deploy --only auth,firestore --project dev   # 認証プロバイダと
 flutter build web && firebase deploy --only hosting --project dev
 ```
 
+- スタンドアロン版の Firebase CLI は、展開したモジュールを `~/.cache/firebase/tools` に置き、バージョンをまたいで共有する。別のバージョンの CLI（他のプロジェクトの `firebase mcp` など）が動いていると展開し直せず、`firebase-tools setup failed.` になる。その場合は、同じバージョンの npm 版を mise の Node で使う（`mise exec -- npx firebase-tools@<mise.toml のバージョン> deploy ...`）
+
 ## よく使うコマンド
 
 ```sh

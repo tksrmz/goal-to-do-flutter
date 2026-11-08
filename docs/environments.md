@@ -19,11 +19,11 @@
 |------|------|-----------|
 | Web アプリ | 登録済み（`1:540815118968:web:e829311b321ef5f392d38d`） | FlutterFire CLI |
 | Firestore | `(default)` データベースを `asia-northeast1`（東京）に作成済み | Firebase CLI |
-| Firestore のセキュリティルール | 暫定ですべての読み書きを拒否。リポジトリには設計書のルール（DES-001 5.2）を反映済みで、デプロイは未実施 | [firestore.rules](../firestore.rules)（`firebase deploy --only firestore`） |
+| Firestore のセキュリティルール・インデックスの除外 | 設計書のルール（DES-001 5.2）とインデックスの除外をデプロイ済み（2026-11-08、`feat/mvp` の `e690fe6`）。未ログインの読み取りが拒否されることを確認済み | [firestore.rules](../firestore.rules)（`firebase deploy --only firestore`） |
 | 認証プロバイダ | メールアドレス＋パスワードが有効 | [firebase.json](../firebase.json) の `auth`（`firebase deploy --only auth`） |
 | ユーザーによるアカウント作成 | 無効（NFR-003）。`accounts:signUp` が `ADMIN_ONLY_OPERATION` で拒否されることを確認済み | コンソール（Authentication > Settings > User actions） |
 | ログイン確認用のアカウント | 作成済み | コンソール（Authentication > Users） |
-| Hosting | 未デプロイ | `firebase deploy --only hosting` |
+| Hosting | デプロイ済み（2026-11-08、`feat/mvp` の `e690fe6`）。<https://goal-to-do-dev.web.app> | `firebase deploy --only hosting` |
 | プラン | Identity Platform へのアップグレードなし（`subtype: FIREBASE_AUTH`） | - |
 
 ## 3. 本番用（goal-to-do-prod）を作るときの手順
