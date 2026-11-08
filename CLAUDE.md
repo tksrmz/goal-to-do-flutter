@@ -16,7 +16,10 @@
 ## 作業の進め方
 
 - main から作業ブランチを切り、PR を作ってマージコミットで main に入れる
+- コード生成の出力（`*.g.dart`・`*.freezed.dart`）はコミットしない。新しいワークツリーやモデル・プロバイダの変更後は `dart run build_runner build` を実行する
 - 変更後は `dart format`・`dart analyze`・`flutter test`・`flutter build web` が通ることを確認する
+- `firestore.rules` を変えたら、ルールのテストも通ることを確認する（`firebase emulators:exec --only firestore --project demo-goal-to-do "mise exec -- npm --prefix rules_test test"`。README を参照）
+- Material は `package:material_ui/material_ui.dart` から使う（Flutter 3.47 で SDK から分離された）
 
 ## 動作検証
 

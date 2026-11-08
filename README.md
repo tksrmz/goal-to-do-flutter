@@ -36,6 +36,8 @@ firebase emulators:start                                          # Auth / Fires
 flutter run -d edge --dart-define=USE_FIREBASE_EMULATOR=true      # Emulator に接続して起動
 ```
 
+Emulator の Auth は起動のたびに空になる。ログインに使うユーザーは Emulator UI（Authentication タブの「Add user」）で作る。
+
 ### セキュリティルールのテスト
 
 [rules_test/](rules_test/) に、Firestore Emulator 上で動かすセキュリティルールのテストがある。
@@ -61,7 +63,8 @@ flutter build web && firebase deploy --only hosting --project dev
 flutter pub get                # 依存関係の取得
 flutter run -d edge            # Edge で起動（動作検証は Edge で行う）
 flutter run -d web-server      # ブラウザを起動せずに開発サーバーだけ立てる
-dart run build_runner watch -d # freezed・Riverpod のコード生成（変更を監視して生成し続ける）
+dart run build_runner build    # freezed・Riverpod のコード生成（生成物はコミットしないので、取得後に必ず実行する）
+dart run build_runner watch    # 変更を監視して生成し続ける
 dart analyze                   # 静的解析（riverpod_lint を含む）
 dart format .                  # フォーマット
 flutter test                   # テスト
