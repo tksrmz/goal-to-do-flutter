@@ -72,3 +72,9 @@ dart format .                  # フォーマット
 flutter test                   # テスト
 flutter build web              # リリースビルド（出力先: build/web）
 ```
+
+## ライセンス
+
+Copyright (c) 2026 tksrmz. All rights reserved.
+
+このリポジトリは閲覧のために公開している。オープンソースではなく、利用・複製・改変・再配布は許可していない。詳しくは [LICENSE](LICENSE) を参照。
