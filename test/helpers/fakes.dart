@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:goal_to_do/app.dart';
 import 'package:goal_to_do/data/auth_repository.dart';
 import 'package:goal_to_do/data/item_repository.dart';
+import 'package:goal_to_do/data/theme_mode_repository.dart';
 import 'package:goal_to_do/domain/item_tree.dart';
 import 'package:goal_to_do/domain/items.dart';
 import 'package:goal_to_do/domain/mutation.dart';
@@ -113,6 +114,7 @@ Future<void> pumpApp(
   required FakeAuthRepository auth,
   FakeItemRepository? items,
   FakeClock? clock,
+  MemoryThemeModeRepository? themeModes,
 }) async {
   final repository = items ?? FakeItemRepository();
   final fakeClock = clock ?? FakeClock(DateTime(2026, 11, 6, 8));
@@ -124,6 +126,9 @@ Future<void> pumpApp(
           (ref) => ref.watch(userIdProvider).value == null ? null : repository,
         ),
         clockProvider.overrideWithValue(fakeClock.call),
+        themeModeRepositoryProvider.overrideWithValue(
+          themeModes ?? MemoryThemeModeRepository(),
+        ),
       ],
       child: const App(),
     ),

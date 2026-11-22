@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'app.dart';
+import 'data/theme_mode_repository.dart';
 import 'firebase_options_dev.dart';
+import 'providers/providers.dart';
 
 /// `--dart-define=USE_FIREBASE_EMULATOR=true` でローカルの Emulator Suite に接続する。
 const _useFirebaseEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
@@ -30,5 +32,22 @@ Future<void> main() async {
     firestore.useFirestoreEmulator('localhost', 8080);
   }
 
-  runApp(const ProviderScope(child: App()));
+  // FR-011: 保存したテーマを最初の画面から使えるよう、先に読み込む
+  final themeModes = await _openThemeModeRepository();
+
+  runApp(
+    ProviderScope(
+      overrides: [themeModeRepositoryProvider.overrideWithValue(themeModes)],
+      child: const App(),
+    ),
+  );
+}
+
+/// ブラウザの保存領域が使えない（無効にされているなど）ときも起動できるよう、メモリで代わりにする。
+Future<ThemeModeRepository> _openThemeModeRepository() async {
+  try {
+    return await SharedPreferencesThemeModeRepository.open();
+  } catch (_) {
+    return MemoryThemeModeRepository();
+  }
 }
