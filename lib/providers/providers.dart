@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../data/auth_repository.dart';
 import '../data/item_repository.dart';
+import '../data/theme_mode_repository.dart';
 import '../domain/calendar_date.dart';
 import '../domain/item_tree.dart';
 import '../domain/items.dart';
@@ -101,5 +103,27 @@ class Today extends _$Today {
     });
     ref.onDispose(timer.cancel);
     return CalendarDate.fromDateTime(now());
+  }
+}
+
+// ---- テーマ（FR-011） ----
+
+/// テーマの保存先。起動時に読み込んだものを main() で差し込む。
+@Riverpod(keepAlive: true)
+ThemeModeRepository themeModeRepository(Ref ref) =>
+    throw UnimplementedError('main() で上書きする');
+
+/// 選んでいるテーマ。保存は待たずに画面へ反映する。
+@Riverpod(keepAlive: true)
+class AppThemeMode extends _$AppThemeMode {
+  @override
+  ThemeMode build() => ref.watch(themeModeRepositoryProvider).load();
+
+  void select(ThemeMode mode) {
+    state = mode;
+    // 保存できなくても、開いている間は選んだテーマのまま使える
+    unawaited(
+      ref.read(themeModeRepositoryProvider).save(mode).catchError((_) {}),
+    );
   }
 }

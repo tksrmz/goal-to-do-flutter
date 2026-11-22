@@ -40,6 +40,7 @@ class AppShell extends ConsumerWidget {
       appBar: AppBar(
         title: Text(title),
         actions: [
+          const _ThemeModeMenu(),
           IconButton(
             tooltip: 'ログアウト',
             icon: const Icon(Icons.logout),
@@ -69,6 +70,36 @@ class AppShell extends ConsumerWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// テーマの切り替え（REQ-001 FR-011）。アイコンは選んでいるテーマを表す。
+class _ThemeModeMenu extends ConsumerWidget {
+  const _ThemeModeMenu();
+
+  static const _options = [
+    (mode: ThemeMode.system, label: 'システムに合わせる', icon: Icons.brightness_auto),
+    (mode: ThemeMode.light, label: 'ライト', icon: Icons.light_mode),
+    (mode: ThemeMode.dark, label: 'ダーク', icon: Icons.dark_mode),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(appThemeModeProvider);
+    return PopupMenuButton<ThemeMode>(
+      tooltip: 'テーマ',
+      icon: Icon(_options.firstWhere((o) => o.mode == current).icon),
+      initialValue: current,
+      onSelected: ref.read(appThemeModeProvider.notifier).select,
+      itemBuilder: (context) => [
+        for (final o in _options)
+          CheckedPopupMenuItem(
+            value: o.mode,
+            checked: o.mode == current,
+            child: Text(o.label),
+          ),
+      ],
     );
   }
 }

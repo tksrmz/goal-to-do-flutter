@@ -14,8 +14,14 @@ class App extends ConsumerStatefulWidget {
 class _AppState extends ConsumerState<App> {
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
-  static final _theme = ThemeData(
-    colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+  static final _theme = _themeFor(Brightness.light);
+  static final _darkTheme = _themeFor(Brightness.dark);
+
+  static ThemeData _themeFor(Brightness brightness) => ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.indigo,
+      brightness: brightness,
+    ),
   );
 
   @override
@@ -38,6 +44,8 @@ class _AppState extends ConsumerState<App> {
     return MaterialApp.router(
       title: 'Goal to Do',
       theme: _theme,
+      darkTheme: _darkTheme,
+      themeMode: ref.watch(appThemeModeProvider),
       scaffoldMessengerKey: _messengerKey,
       routerConfig: ref.watch(routerProvider),
       locale: const Locale('ja'),
