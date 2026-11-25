@@ -1,0 +1,57 @@
+version: 2
+
+updates:
+  # Flutter / Dart パッケージのバージョン追従
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # アプリ（publish_to: none）なので制約の下限を引き上げる。
+    # pubspec.yaml の ^x.y.z が実バージョンに追従し、差分が読みやすくなる
+    versioning-strategy: "increase"
+    # major は破壊的変更の初期不具合を避けるため長めに待つ
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+    groups:
+      # minor/patch はまとめて1PR。major はグループに入らず個別PRになる
+      pub-minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # セキュリティルールのテスト（rules_test/）の npm パッケージのバージョン追従
+  - package-ecosystem: "npm"
+    directory: "/rules_test"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
+    groups:
+      rules-test-minor-and-patch:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      security-updates:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
