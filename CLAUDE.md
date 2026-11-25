@@ -20,6 +20,7 @@
 - 変更後は `dart format`・`dart analyze`・`flutter test`・`flutter build web` が通ることを確認する
 - `firestore.rules` を変えたら、ルールのテストも通ることを確認する（`firebase emulators:exec --only firestore --project demo-goal-to-do "mise exec -- npm --prefix rules_test test"`。README を参照）
 - Material は `package:material_ui/material_ui.dart` から使う（Flutter 3.47 で SDK から分離された）
+- 依存の更新は Dependabot が PR を出す（`.github/dependabot.yml`。pub は毎週月曜、rules_test の npm は毎週火曜）。Dependabot は `mise.toml` を更新できないので、Flutter・Firebase CLI・Java・Node のバージョンは手動で上げる
 
 ## 動作検証
 
